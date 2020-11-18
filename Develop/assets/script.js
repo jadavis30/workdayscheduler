@@ -1,11 +1,12 @@
 $(document).ready(function() {
  
     //Show current day and time
-    var nowMoment = moment().add(1, "day");
+    var nowMoment = moment();
+    var eDisplayMoment = document.getElementById('currentDay');
+    eDisplayMoment.innerHTML = nowMoment.format("LLLL");
     var hour = nowMoment.hour();
     var currentDay = nowMoment.dayOfYear();
-    var eDisplayMoment = document.getElementById('currentDay');
-    eDisplayMoment.innerHTML = nowMoment.format('dddd--MMMM Mo, h:mm A');
+    
     
     //get localstorage and span color 
     $(".time-block").each(function(){
@@ -42,20 +43,23 @@ $(document).ready(function() {
         var textArea = $(this).siblings(".textarea");
         var timeArrayString = localStorage.getItem(textArea.data("key"));
         var timeArray = [];
-        var timeObject = null;
+        var timeObjectIndex = -1;
         if (timeArrayString) {
             timeArray = JSON.parse(timeArrayString);
-            timeObject = timeArray.find((x)=> {return x["day"] === currentDay});
+            timeObjectIndex = timeArray.findIndex(x=> x.day === currentDay); 
         }
-        if (timeObject) {
-            
+        
+        if (timeObjectIndex !== -1) {
+            var timeObject = timeArray[timeObjectIndex];
+            timeObject.text = textArea.val();
         }
-
-        var timeObject = {
-            text: textArea.val(),
-            day: currentDay
-        };
-        timeArray.push(timeObject);
+        else {
+            var timeObject = {
+                text: textArea.val(),
+                day: currentDay
+            };
+            timeArray.push(timeObject);
+        }    
 
         localStorage.setItem(textArea.data("key"), JSON.stringify(timeArray));
        
