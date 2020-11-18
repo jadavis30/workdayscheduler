@@ -3,11 +3,23 @@ var NowMoment = moment();
 var eDisplayMoment = document.getElementById('currentDay');
 eDisplayMoment.innerHTML = NowMoment.format('dddd--MMMM Mo, h:mm A');
 
+//local storage variables
+var hourKey = document.getElementsByClassName("hour");
+var taskData = document.getElementsByClassName("textarea");
+var btnSave = document.getElementsByClassName("save-text");
 
+btnSave.onclick = function() {
+    var hour = hourKey.text;
+    var task = taskData.text;
+    //save to localstorage if text present
+    if (hour & task) {
+        localStorage.setItem(hour, task);
+    }
+};
 //save to localstorage
 function mySave() {
-    var myTask = document.getElementById("08").value;
-    localStorage.setItem("08", myTask);
+    var myTask = document.getElementsByClassName("textarea").value;
+    localStorage.setItem("textarea", myTask);
 };
 
 //input text when user clicks in blank space
@@ -16,18 +28,18 @@ $(".hour").on("click", "textarea", function() {
     var text = $(this)
     .text()
     .trim();
-    var textInput = $("<textarea>")
-    .addClass("form-control")
-    .val(text);
+    //var textInput = $("textarea")
+    //.addClass("form-control")
+    //.val(text);
 
-    $(this).replaceWith(textInput);
-    textInput.trigger("focus");
+    //$(this).replaceWith(textInput);
+    //textInput.trigger("focus");
     mySave();
  });
-$(".hour").on("click", "btn", function() {
+$(".hour").on("click", ".save-text", function() {
     //snagging the current text
     var text = $(this)
-    .val()
+    .text()
     .trim();
     //getting parent attr
     var status = $(this)
@@ -40,18 +52,11 @@ $(".hour").on("click", "btn", function() {
         .closest(".hour")
         .index();
 
-    tasks[status][index].text = text;
-    mySave();
-    
+    tasks[status][index].text = text; 
 });
 
-
-
-
-
-
 //save changes through btn
-
+mySave();
 
 //set span color
 var checkTime = function() {
