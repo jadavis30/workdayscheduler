@@ -16,6 +16,8 @@ btnSave.onclick = function() {
         localStorage.setItem(hour, task);
     }
 };
+
+
 //save to localstorage
 function mySave() {
     var myTask = document.getElementsByClassName("textarea").value;
