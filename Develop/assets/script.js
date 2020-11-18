@@ -1,40 +1,18 @@
 //displaying time below time, formatted for aesthetics
 var NowMoment = moment();
 var eDisplayMoment = document.getElementById('currentDay');
-eDisplayMoment.innerHTML = NowMoment.format('dddd--MMMM Mo, h:m A');
+eDisplayMoment.innerHTML = NowMoment.format('dddd--MMMM Mo, h:mm A');
 
-//load data from localStorage
-var loadTasks = function() {
-    tasks = JSON.parse(localStorage.getItem("tasks"));
-
-//load previous tasks if present
-function renderHourlyTasks(tasks) {
-    
-}
-
-// if nothing is in localstorage, create a new object to track all task status arrays
-    if (!tasks) {
-        tasks = {
-            "08": [],
-            "09": [],
-            "10": [],
-            "11": [],
-            "12": [],
-            "01": [],
-            "02":[],
-            "03": [],
-            "04": [],
-            "05": []
-        };
-    }
-}
 
 //save to localstorage
-
+function mySave() {
+    var myTask = document.getElementById("08").value;
+    localStorage.setItem("08", myTask);
+};
 
 //input text when user clicks in blank space
-$(".hour").on("click", "span", function() {
-    console.log (this);
+$(".hour").on("click", "textarea", function() {
+    
     var text = $(this)
     .text()
     .trim();
@@ -44,11 +22,8 @@ $(".hour").on("click", "span", function() {
 
     $(this).replaceWith(textInput);
     textInput.trigger("focus");
-
-    console.log(text);
-    console.log(this);
-
-});
+    mySave();
+ });
 $(".hour").on("click", "btn", function() {
     //snagging the current text
     var text = $(this)
@@ -66,12 +41,10 @@ $(".hour").on("click", "btn", function() {
         .index();
 
     tasks[status][index].text = text;
-    saveTasks();
-
-    
+    mySave();
     
 });
-$(".hour").append("<span>No outstanding tasks</span>");
+
 
 
 
