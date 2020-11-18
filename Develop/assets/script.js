@@ -1,96 +1,68 @@
-//displaying time below time, formatted for aesthetics
-var NowMoment = moment();
-var eDisplayMoment = document.getElementById('currentDay');
-eDisplayMoment.innerHTML = NowMoment.format('dddd--MMMM Mo, h:mm A');
-
-//local storage variables
-var hourKey = document.getElementsByClassName("hour");
-var taskData = document.getElementsByClassName("textarea");
-var btnSave = document.getElementsByClassName("save-text");
-
-btnSave.onclick = function() {
-    var hour = hourKey.text;
-    var task = taskData.text;
-    //save to localstorage if text present
-    if (hour & task) {
-        localStorage.setItem(hour, task);
-    }
-};
-
-
-//save to localstorage
-function mySave() {
-    var myTask = document.getElementsByClassName("textarea").value;
-    localStorage.setItem("textarea", myTask);
-};
-
-//input text when user clicks in blank space
-$(".hour").on("click", "textarea", function() {
+$(document).ready(function() {
+ 
+    //Show current day and time
+    var nowMoment = moment().add(1, "day");
+    var hour = nowMoment.hour();
+    var currentDay = nowMoment.dayOfYear();
+    var eDisplayMoment = document.getElementById('currentDay');
+    eDisplayMoment.innerHTML = nowMoment.format('dddd--MMMM Mo, h:mm A');
     
-    var text = $(this)
-    .text()
-    .trim();
-    //var textInput = $("textarea")
-    //.addClass("form-control")
-    //.val(text);
-
-    //$(this).replaceWith(textInput);
-    //textInput.trigger("focus");
-    mySave();
- });
-$(".hour").on("click", ".save-text", function() {
-    //snagging the current text
-    var text = $(this)
-    .text()
-    .trim();
-    //getting parent attr
-    var status = $(this)
-    .closest(".hour")
-    .attr("id")
-    .replace(".hour", "");
-
-    //setting position
-    var index = $(this)
-        .closest(".hour")
-        .index();
-
-    tasks[status][index].text = text; 
-});
-
-//save changes through btn
-mySave();
-
-//set span color
-var checkTime = function() {
-    var currentTime = moment().format('H');
-    var timeBlockElements = $(".textarea");
-    
-    //loop through the classes
-    for (var i =  0; i <timeBlockElements.length; i++) {
-        //return i as a string
-        var elementId = timeBlockElements[i].id;
-        var manipId = document.getElementById(timeBlockElements[i].id)
-        $(timeBlockElements[i].id).removeClass(".past .present .future");
-
-        //new class based on time
-        if(elementId < currentTime) {
-            $(manipId).addClass(".past");
-        } else if (elementId > currentTime) {
-            $(manipId).addClass(".future");
-        } else {
-            $(manipId).addClass(".present");
+    //get localstorage and span color 
+    $(".time-block").each(function(){
+        var textArea = $(this).find(".textarea");
+        var key = textArea.data("key");
+        var timeArrayString = localStorage.getItem(textArea.data("key"));
+        var timeArray = [];
+        if (timeArrayString) {
+            timeArray = JSON.parse(timeArrayString);
         }
-    }
-}
+        var currentTimeObject = timeArray.find((timeObject)=> {return timeObject["day"] === currentDay});
+        if (currentTimeObject) {
+            textArea.val(currentTimeObject.text);
+        }
+        
+        var blockHour = parseInt(key);
+        if (blockHour < hour) {
+            textArea.addClass("past");
+        }
+        else if (blockHour === hour) {
+            textArea.addClass("present");
+        }
+        else {
+            textArea.addClass("future");
+        }
+        
+    });
+    
+    //
+    var btnSave = $(".saveBtn");
+   
+    
+    btnSave.click(function() {
+        var textArea = $(this).siblings(".textarea");
+        var timeArrayString = localStorage.getItem(textArea.data("key"));
+        var timeArray = [];
+        var timeObject = null;
+        if (timeArrayString) {
+            timeArray = JSON.parse(timeArrayString);
+            timeObject = timeArray.find((x)=> {return x["day"] === currentDay});
+        }
+        if (timeObject) {
+            
+        }
 
-//checking time if user stays on page
-setInterval(checkTime(), (1000 * 60) * 1);
+        var timeObject = {
+            text: textArea.val(),
+            day: currentDay
+        };
+        timeArray.push(timeObject);
 
+        localStorage.setItem(textArea.data("key"), JSON.stringify(timeArray));
+       
+    });
 
-//when user clicks save button, save <span>
+    
+    //Bonus: have data wipe on a new day
+    
+})
 
-
-
-//get data from localStorage on refresh
-
-//Bonus: have data wipe on a new day
